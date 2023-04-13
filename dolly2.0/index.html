@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Ideation & Optimization Tool</title>
+</head>
+<body>
+    <h1>Content Ideation & Optimization Tool</h1>
+
+    <h3>Generate Content Ideas</h3>
+    <form id="generate-ideas-form">
+        <label for="keyword">Keyword:</label>
+        <input type="text" id="keyword" name="keyword">
+        <button type="submit">Generate Ideas</button>
+    </form>
+    <ul id="ideas-list"></ul>
+
+    <h3>Optimize Title</h3>
+    <form id="optimize-title-form">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title">
+        <button type="submit">Optimize Title</button>
+    </form>
+    <p id="optimized-title"></p>
+
+    <script>
+        document.getElementById("generate-ideas-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const keyword = document.getElementById("keyword").value;
+            const response = await fetch("/generate_ideas", {
+                method: "POST",
+                body: new FormData(e.target),
+            });
+            const ideas = await response.json();
+            const ideasList = document.getElementById("ideas-list");
+            ideasList.innerHTML = "";
+            ideas.forEach(idea => {
+                const listItem = document.createElement("li");
+                listItem.textContent = idea.generated_text;
+                ideasList.appendChild(listItem);
+            });
+        });
+
+        document.getElementById("optimize-title-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const response = await fetch("/optimize_title", {
+                method: "POST",
+                body: new FormData(e.target),
+            });
+            const optimizedTitle = await response.json();
+            document.getElementById("optimized-title").textContent = optimizedTitle[0].generated_text;
+        });
+    </script>
+</body>
+</html>
